@@ -25,7 +25,6 @@ library(tidyr)
 library(XML)
 library(ggmap)
 
-setwd("C:/Projects/R/plaatsnamenNL")
 
 ct <- v8()
 if (!file.exists("suffixlist.js"))
