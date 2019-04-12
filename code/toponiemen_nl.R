@@ -27,9 +27,9 @@ library(ggmap)
 
 
 ct <- v8()
-if (!file.exists("suffixlist.js"))
-  download.file(url="./data/suffixlist.js", destfile="suffixlist.js")
-ct$source("suffixlist.js")
+if (!file.exists("./data/suffixlist_nl.js"))
+  download.file(url="./data/suffixlist_nl.js", destfile="./data/suffixlist_nl.js")
+ct$source("./data/suffixlist_nl.js")
 
 #' Retrieve suffix list as end-matching regexes
 #'
@@ -89,9 +89,10 @@ add.geoCoordinates <- function(x) {
 #' @note My version is more inclusive than Moritz's (if a town matches more
 #'       than one suffix it will be counted in more than one suffix group).
 #' @export
-read_places <- function(suf=suffix_regex()) {
+read_places <- 
+  function(suf = suffix_regex()) {
 
-   if (!file.exists("placenames_nl.RData")) {
+   if (!file.exists("./data/placenames_nl.RData")) {
       #####################################################################################
       # load data from internet:
       #####################################################################################
@@ -121,10 +122,10 @@ read_places <- function(suf=suffix_regex()) {
       
       # add geo-coordinates
       places <- add.geoCoordinates(my.table)
-      save(places, file="placenames_nl.RData")
+      save(places, file="./data/placenames_nl.RData")
    }
    #plc <- read.csv("/data/placenames_nl.csv", stringsAsFactors=FALSE, sep="~")
-   load(file="placenames_nl.RData")
+   load(file="./data/placenames_nl.RData")
    #plc <- places[!is.na(places$lon), c("naam", "lat", "lon")]
    #colnames(plc) <- c("name", "latitude", "longitude")
    plc <- places
@@ -152,7 +153,8 @@ read_places <- function(suf=suffix_regex()) {
 #'
 #' @return a SpatialPolygons hex grid
 #' @export
-create_hexgrid <- function() {
+create_hexgrid <- 
+  function() {
 
   de_shp <- raster::getData("GADM", country="NLD", level=0, path=tempdir())
 
@@ -179,24 +181,25 @@ create_hexgrid <- function() {
 #' @return a \code{list} with an element for each suffix group that
 #'   contains the title, subtitle, ggplot2 object and count of towns.
 #' @export
-make_maps <- function(verbose=TRUE) {
+make_maps <- 
+  function(verbose = TRUE) {
 
   if (verbose) message("Reading & processing towns")
   plc <- read_places()
 
   if (verbose) message("Creating the map hexes")
-  de_hex_polys <- create_hexgrid()
+  hex_polys_nl <- create_hexgrid()
 
   if (verbose) message("Making the gridded heat maps")
 
   # we'll need this for the plotting
-  de_hex_map <- ggplot2::fortify(de_hex_polys)
+  de_hex_map <- ggplot2::fortify(hex_polys_nl)
 
   # find the hex each town is in
   plc$id <- sprintf("ID%s",
                     over(SpatialPoints(coordinates(plc[,c(3,2)]), # select lon, lat
-                                       CRS(proj4string(de_hex_polys))),
-                         de_hex_polys))
+                                       CRS(proj4string(hex_polys_nl))),
+                         hex_polys_nl))
 
   # count up all the towns in each hex (by line ending grouping)
   plc <- tidyr::separate(plc, found, c("f1", "f2", "f3"), sep="\\|", fill="right")
@@ -264,16 +267,18 @@ syl_maps <- NULL
 #'
 #' @param output_file where to save the built HTML (optional)
 #' @export
-display_maps <- function(output_file=NULL) {
+display_maps <- 
+  function(output_file = NULL) {
 
   # don't recreate the data
-  if (is.null(syl_maps)) syl_maps <- make_maps()
+  if (is.null(syl_maps)) 
+    syl_maps <- make_maps()
 
-  if (!file.exists("styles.html"))
-    download.file("http://rud.is/zellingenach/styles.html", "styles.html")
+  if (!file.exists("./css/styles.html"))
+    download.file("http://rud.is/zellingenach/styles.html", "./css/styles.html")
   
   tags$html(
-    tags$head(includeHTML("styles.html")),
+    tags$head(includeHTML("./css/styles.html")),
     tags$body(
       h1("-aarde, -hoven, -zijl"),
       p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Dutch toponyms</a>, based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
@@ -287,8 +292,14 @@ display_maps <- function(output_file=NULL) {
     )
   ) -> the_maps
 
-  html_print(the_maps, background="#dfdada;")
+  html_print(the_maps, background = "#dfdada;")
 
-  if (!is.null(output_file)) save_html(the_maps, output_file, background="#dfdada;")
-
+  if (!is.null(output_file)) 
+    htmltools::save_html(html = the_maps, 
+                         file = output_file, 
+                         background = "#dfdada;")
 }
+
+
+# after all the hard work, finally...
+display_maps("./output/toponiemen_nl.html")
