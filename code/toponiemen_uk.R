@@ -281,7 +281,7 @@ display_maps <-
     tags$head(includeHTML("./css/styles.html")),
     tags$body(
       h1("-thorpe, -ness, -by"),
-      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>English toponyms</a> showing the Viking-heritage, based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
+      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>English toponyms</a> showing the <a href='https://www.jorvikvikingcentre.co.uk/the-vikings/viking-place-names/'>Viking-heritage</a>.<br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
       pblapply(1:length(syl_maps), function(i) {
         div(class="map",
             h2(class="map", HTML(syl_maps[[i]]$title)),
