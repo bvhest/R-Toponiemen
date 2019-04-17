@@ -3,6 +3,7 @@
 **   - https://nsaunders.wordpress.com/2019/04/03/mapping-the-vikings-using-r/
 **   - https://www.britishmuseum.org/whats_on/exhibitions/vikings/vikings_live/old_norse_origins.aspx
 **   - http://www.viking.no/e/heritage/eplacenames.htm
+**   - http://www.viking.no/e/england/danelaw/epl-danelaw.htm
 **   - https://www.jorvikvikingcentre.co.uk/the-vikings/viking-place-names/
 **
 ** BHE, 2019-04-12
