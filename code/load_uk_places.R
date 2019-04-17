@@ -11,12 +11,16 @@ places <-
   dplyr::filter(descnm == "LOC") %>%
   # only keep required columns
   dplyr::select(place15nm, lat, long_) %>%
-  # rename those columns
-  dplyr::rename(name = place15nm,
-                latitude = lat,
-                longitude = long_)
-
+  # correct lat/lon for places like Tregonissey
+  dplyr::mutate(latitude  = dplyr::if_else(lat < 0, long_, lat),
+                longitude = dplyr::if_else(lat < 0, lat, long_)) %>%
+  # rename some columns
+  dplyr::rename(name = place15nm) %>%
+  # keep 
+  dplyr::select(name, latitude, longitude)
+  
 glimpse(places)
+
 
 # and finally save the data frame with places that is required by the "zellig.R" script!
 save(places, 
