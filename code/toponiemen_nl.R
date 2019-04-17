@@ -281,7 +281,7 @@ display_maps <-
     tags$head(includeHTML("./css/styles.html")),
     tags$body(
       h1("-aarde, -hoven, -zijl"),
-      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Dutch toponyms</a>, based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
+      p(HTML("Visualisation of some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Dutch toponyms</a>, based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
       pblapply(1:length(syl_maps), function(i) {
         div(class="map",
             h2(class="map", HTML(syl_maps[[i]]$title)),
