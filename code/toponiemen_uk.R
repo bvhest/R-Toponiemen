@@ -193,11 +193,11 @@ make_maps <-
   if (verbose) message("Making the gridded heat maps")
 
   # we'll need this for the plotting
-  de_hex_map <- ggplot2::fortify(hex_polys_uk)
+  uk_hex_map <- ggplot2::fortify(hex_polys_uk)
 
   # find the hex each town is in
   plc$id <- sprintf("ID%s",
-                    over(SpatialPoints(coordinates(plc[,c(3,2)]), # select lon, lat
+                    over(SpatialPoints(sp::coordinates(plc[,c(3,2)]), # select lon, lat
                                        CRS(proj4string(hex_polys_uk))),
                          hex_polys_uk))
 
@@ -231,10 +231,10 @@ make_maps <-
     cur_heat <- dplyr::filter(de_heat, found==i)
 
     gg <- ggplot()
-    gg <- gg + geom_map(data=de_hex_map, map=de_hex_map,
+    gg <- gg + geom_map(data=uk_hex_map, map=uk_hex_map,
                         aes(x=long, y=lat, map_id=id),
                         size=0.6, color="#ffffff", fill=no_fill)
-    gg <- gg + geom_map(data=cur_heat, map=de_hex_map,
+    gg <- gg + geom_map(data=cur_heat, map=uk_hex_map,
                         aes(fill=fill, map_id=id),
                         color="#ffffff", size=0.6)
     gg <- gg + scale_fill_identity(na.value=no_fill)
