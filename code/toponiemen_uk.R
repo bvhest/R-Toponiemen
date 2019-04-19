@@ -91,50 +91,17 @@ add.geoCoordinates <- function(x) {
 #' @export
 read_places <- 
   function(suf = suffix_regex()) {
-
-   if (!file.exists("./data/placenames_uk.RData")) {
-      #####################################################################################
-      # load data from internet:
-      #####################################################################################
-      # build the URL
-      url <- "http://home.kpn.nl/pagklein/almanak.html"
-      
-      # read the tables and select the one that has the most rows
-      tables <- readHTMLTable(url)
-      n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
-      #tables[[which.max(n.rows)[[1]]]]
-      
-      # select the table we need (the "ledenlijst") - read as a dataframe
-      my.table <- tables[[which.max(n.rows)+1]]
-      colnames(my.table) <- c("code","naam", "postcode", "gemeente", "provincie")
-      # first some data cleaning:
-      my.table$code <- as.character(my.table$code)
-      my.table$naam <- as.character(my.table$naam)
-      my.table$postcode <- as.character(my.table$postcode)
-      my.table$gemeente <- as.character(my.table$gemeente)
-      my.table$provincie <- as.character(my.table$provincie)
-      my.table$postcode <- gsub("–","-",my.table$postcode)
-      my.table$provincie <- gsub("Fryslân","Friesland",my.table$provincie)
-      my.table <- my.table[complete.cases(my.table$naam),]
-      
-      write.table(my.table, "/data/placenames_uk.csv", sep="~")
-      remove(my.table,n.rows,url,tables)
-      
-      # add geo-coordinates
-      places <- add.geoCoordinates(my.table)
-      save(places, file="./data/placenames_uk.RData")
-   }
    #plc <- read.csv("/data/placenames_uk.csv", stringsAsFactors=FALSE, sep="~")
    load(file="./data/placenames_uk.RData")
    #plc <- places[!is.na(places$lon), c("naam", "lat", "lon")]
-   #colnames(plc) <- c("name", "latitude", "longitude")
    plc <- places
-
+   plc$found <- ""
+   colnames(plc)# <- c("name", "latitude", "longitude")
+   
    lapply(suf, function(regex) {
     which(stri_detect_regex(plc$name, regex))
    }) -> matched_endings
    
-   plc$found <- ""
    
    for(i in 1:length(matched_endings)) {
     where_found <- matched_endings[[i]]
@@ -144,6 +111,7 @@ read_places <-
    
    dplyr::mutate(dplyr::filter(plc, found != ""), found=sub("\\|$", "", found))
 
+   return(as.data.frame(plc))
 }
 
 #' Make a uniform hexgrid version of a GADM Germany shapefile
@@ -301,5 +269,6 @@ display_maps <-
 }
 
 
-# after all the hard work, finally...
-display_maps("./output/toponiemen_uk.html")
+# after all the hard work, finally... 
+# output to file is no longer working
+display_maps()

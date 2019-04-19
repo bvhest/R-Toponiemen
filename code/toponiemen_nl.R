@@ -5,7 +5,8 @@
 
 # NOTE THAT YOU NEED INTERNET ACCESS TO RUN THIS SCRIPT
 # it pulls the three necessary files (only once) from my web site
-
+# install.packages(c("V8", "ggalt", "viridis", "rgeos", "pbapply", "svglite"))
+  
 library(V8)
 library(dplyr)
 library(stringi)
