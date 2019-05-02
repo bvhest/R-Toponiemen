@@ -2,13 +2,14 @@
 
 ## Introductie
 
+"Gehuchten, dorpen, steden en landstreken kregen vaak hun naam door de geografische verschijningsvorm, de persoon die er woonde, of een gebeurtenis die er plaatsvond. Geografische verschijningsvormen in plaatsnamen zijn te onderscheiden in landschappen (berg, duin, bos), bodemgesteldheid (zand, veen, zout) en menselijke activiteit (dam, burg, kanaal)." [van Wikipedia](https://nl.wikipedia.org/wiki/Toponiem)
 
 
 ## Bronnen en inspiratie
 
 Data
 
-  * [English toponyms](https://nl.wikipedia.org/wiki/Toponiem)
+  * [Nederlandse plaatsnamen]() ... bron is verloren ...
   * [Viking-heritage](https://www.jorvikvikingcentre.co.uk/the-vikings/viking-place-names)
   
 Credits: this visualisation is based on the inspiring publications:

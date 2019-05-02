@@ -249,7 +249,16 @@ display_maps <-
     tags$head(includeHTML("./css/styles.html")),
     tags$body(
       h1("-thorpe, -ness, -by"),
-      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>English toponyms</a> showing the <a href='https://www.jorvikvikingcentre.co.uk/the-vikings/viking-place-names/'>Viking-heritage</a>.<br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
+      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>English toponyms</a> showing the <a href='https://www.jorvikvikingcentre.co.uk/the-vikings/viking-place-names/'>Viking-heritage</a>.<br/><br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
+      p(HTML("<ul>
+<li>by: farmstead, village, settlement. Example Selby, Whitby</li>
+<li>keld: spring. Example Threkeld</li>
+<li>kirk: originally kirkja, meaning church. Example Ormskirk</li>
+<li>ness: promontory or headland. Note: Sheerness is Old English; Inverness is Gaelic (meaning mouth), Skegness is Old Norse</li>
+<li>thwaite: originally thveit, woodland clearing. Example Slaithwaite (Huddersfield)</li>
+<li>toft: site of a house or building. Example Lowestoft, Langtoft</li>
+<li>thorpe: secondary settlement (but in the Midlands could by Old English Throp meaning settlement). Example Copmanthorpe</li>
+</ul>")),
       pblapply(1:length(syl_maps), function(i) {
         div(class="map",
             h2(class="map", HTML(syl_maps[[i]]$title)),
