@@ -26,9 +26,9 @@ library(XML)
 library(ggmap)
 
 
+rm(list=ls()) 
+
 ct <- v8()
-if (!file.exists("./data/suffixlist_is.js"))
-  download.file(url="./data/suffixlist_is.js", destfile="./data/suffixlist_is.js")
 ct$source("./data/suffixlist_is.js")
 
 #' Retrieve suffix list as end-matching regexes
@@ -40,7 +40,7 @@ ct$source("./data/suffixlist_is.js")
 #' @return A character vector of regular expressions
 #' @export
 suffix_regex <- function() {
-  sprintf("(%s)$", sapply(ct$get("suffixList"), paste0, collapse="|"))
+  sprintf("(%s)$", sapply(ct$get("suffixList"), paste0, collapse = "|"))
 }
 
 #' Retrieve suffix list as a list of vectors with suffix names
@@ -74,8 +74,7 @@ read_places <-
    #plc <- places[!is.na(places$lon), c("naam", "lat", "lon")]
    plc <- places
    plc$found <- ""
-   colnames(plc)# <- c("name", "latitude", "longitude")
-   
+
    lapply(suf, function(regex) {
     which(stri_detect_regex(plc$name, regex))
    }) -> matched_endings
@@ -87,13 +86,20 @@ read_places <-
       paste0(plc$found[where_found], sprintf("%d|", i))
    }
    
-   dplyr::mutate(dplyr::filter(plc, 
-                               found != ""), 
-                 found = sub("\\|$", 
-                             "", 
-                             found))
+   # dplyr::mutate(dplyr::filter(plc, 
+   #                             found != ""), 
+   #               found = sub("\\|$", 
+   #                           "", 
+   #                           found))
 
-   return(as.data.frame(plc))
+   plc <-
+     plc %>%
+     dplyr::filter(found != "") %>%
+     dplyr::mutate(found = sub("\\|$", "", found)) %>%
+#     dplyr::filter(found >= 50) %>%
+     as.data.frame()
+   
+   return(plc)
 }
 
 #' Make a uniform hexgrid version of a GADM Germany shapefile
@@ -106,10 +112,14 @@ read_places <-
 create_hexgrid <- 
   function() {
 
-  is_shp <- raster::getData("GADM", country="ISL", level=0, path=tempdir())
+  is_shp <- raster::getData("GADM", country = "ISL", level = 0, path = tempdir())
 
-  is_hex_pts <- sp::spsample(is_shp, type="hexagonal", n=10000, cellsize=0.19,
-                             offset=c(0.5, 0.5), pretty=TRUE)
+  is_hex_pts <- sp::spsample(is_shp, 
+                             type = "hexagonal", 
+                             n = 10000, 
+                             cellsize = 0.19,
+                             offset=c(0.5, 0.5), 
+                             pretty = TRUE)
 
   sp::HexPoints2SpatialPolygons(is_hex_pts)
 
@@ -140,66 +150,76 @@ make_maps <-
   if (verbose) message("Creating the map hexes")
   hex_polys_is <- create_hexgrid()
 
-  if (verbose) message("Making the gridded heat maps")
 
   # we'll need this for the plotting
+  if (verbose) message("Making the gridded heat maps")
   is_hex_map <- ggplot2::fortify(hex_polys_is)
 
   # find the hex each town is in
+  if (verbose) message("Finding the hex each town is in")
   plc$id <- sprintf("ID%s",
                     sp::over(sp::SpatialPoints(sp::coordinates(plc[,c(3,2)]), # select lon, lat
                                                sp::CRS(sp::proj4string(hex_polys_is))),
                              hex_polys_is))
 
   # count up all the towns in each hex (by line ending grouping)
-  plc <- tidyr::separate(plc, found, c("f1", "f2", "f3"), sep="\\|", fill="right")
+  if (verbose) message("Counting up all the towns in each hex (by line ending grouping)")
+  plc <- tidyr::separate(plc, found, c("f1", "f2", "f3"), sep = "\\|", fill = "right")
   plc <- tidyr::gather(plc, where, found, f1, f2, f3)
   plc <- dplyr::select(filter(plc, !is.na(found)), -where)
-  de_heat <- dplyr::count(plc, found, id)
+  is_heat <- dplyr::count(plc, found, id)
 
   # scale the values properly
-  de_heat$log <- log(de_heat$n)
+  if (verbose) message("Scaling the values properly")
+  is_heat$log <- log(is_heat$n)
 
   # assign colors to the mapped, scaled values
+  if (verbose) message("Assigning colors to the mapped, scaled values")
   bin_ct <- 20
   no_fill <- "#fde725"
   vir <- rev(viridis::viridis_pal()(bin_ct+1))
   vir_col <- col_bin(vir[2:length(vir)],
-                     range(de_heat$log),
-                     bins=bin_ct,
-                     na.color=no_fill)
+                     range(is_heat$log),
+                     bins = bin_ct,
+                     na.color = no_fill)
 
-  de_heat$fill <- vir_col(de_heat$log)
+  is_heat$fill <- vir_col(is_heat$log)
 
-  # we'll use a proper projection for Germany
+  # we'll use a proper projection
+  if (verbose) message("Applying a proper projection")
   epsg_31468 <- "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=4500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"
 
   suf_nam <- suffix_names()
 
   lapply(1:length(suf_nam), function(i) {
 
-    cur_heat <- dplyr::filter(de_heat, found==i)
+    cur_heat <- dplyr::filter(is_heat, found == i)
 
     gg <- ggplot()
-    gg <- gg + geom_map(data=is_hex_map, map=is_hex_map,
-                        aes(x=long, y=lat, map_id=id),
-                        size=0.6, color="#ffffff", fill=no_fill)
-    gg <- gg + geom_map(data=cur_heat, map=is_hex_map,
-                        aes(fill=fill, map_id=id),
-                        color="#ffffff", size=0.6)
-    gg <- gg + scale_fill_identity(na.value=no_fill)
+    gg <- gg + geom_map(data = is_hex_map, 
+                        map = is_hex_map,
+                        aes(x = long, y = lat, map_id = id),
+                        size = 0.6, 
+                        color = "#ffffff", 
+                        fill = no_fill)
+    gg <- gg + geom_map(data = cur_heat, 
+                        map = is_hex_map,
+                        aes(fill = fill, map_id = id),
+                        color = "#ffffff", 
+                        size = 0.6)
+    gg <- gg + scale_fill_identity(na.value = no_fill)
     gg <- gg + coord_proj(epsg_31468)
     gg <- gg + theme_map()
-    gg <- gg + theme(strip.background=element_blank())
-    gg <- gg + theme(strip.text=element_blank())
-    gg <- gg + theme(legend.position="right")
+    gg <- gg + theme(strip.background = element_blank())
+    gg <- gg + theme(strip.text = element_blank())
+    gg <- gg + theme(legend.position = "right")
     
-    list(title=sprintf("&#8209;%s", suf_nam[[i]][1]),
-         subtitle=ifelse(length(suf_nam[[i]])<=1, "",
-                         paste0(sprintf("&#8209;%s", suf_nam[[i]][2:length(suf_nam[[i]])]),
-                                collapse=", ")),
-         total=sum(cur_heat$n),
-         gg=gg)
+    list(title = sprintf("&#8209;%s", suf_nam[[i]][1]),
+         subtitle = ifelse(length(suf_nam[[i]])<=1, "",
+                           paste0(sprintf("&#8209;%s", suf_nam[[i]][2:length(suf_nam[[i]])]),
+                                  collapse = ", ")),
+         total = sum(cur_heat$n),
+         gg = gg)
 
   })
 
@@ -230,7 +250,8 @@ display_maps <-
   tags$html(
     tags$head(includeHTML("./css/styles.html")),
     tags$body(
-      h1("-thorpe, -ness, -by"),
+      h1("-bær, -bakki, -borg"),
+      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Icelandic toponyms</a> showing the origin of different Icelandic names.<br/><br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
       pblapply(1:length(syl_maps), function(i) {
         div(class="map",
             h2(class="map", HTML(syl_maps[[i]]$title)),
