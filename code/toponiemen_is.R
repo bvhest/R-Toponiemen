@@ -51,30 +51,8 @@ suffix_regex <- function() {
 #'
 #' @return A list of suffix character vectors
 #' @export
-suffix_names <- function() { ct$get("suffixList") }
-
-#' add geo-coordinates based on town names
-#'
-#' @param df with place names and postal codes
-#' @return \code{data.frame} of enriched places
-#' @export
-add.geoCoordinates <- function(x) {
-   
-   if (!("lon" %in% names(x))) {
-      x$lon <- NA
-      x$lat <- NA
-   }
-   j <- 0
-   jMax <- geocodeQueryCheck()
-   for (i in 1:nrow(x)) { # the Google Maps api limits to 2500 queries a day.
-      if (is.na(x$lon[i]) & j < jMax) {
-         j <- j+1
-         valor <- geocode(paste(x$naam[i],x$provincie[i],sep=","))
-         x$lon[i] <- valor$lon
-         x$lat[i] <- valor$lat
-      }
-   }
-   return(x)
+suffix_names <- function() {
+  ct$get("suffixList") 
 }
 
 #' Retrieve town names and determine which suffix bucket they belong in
@@ -109,7 +87,11 @@ read_places <-
       paste0(plc$found[where_found], sprintf("%d|", i))
    }
    
-   dplyr::mutate(dplyr::filter(plc, found != ""), found=sub("\\|$", "", found))
+   dplyr::mutate(dplyr::filter(plc, 
+                               found != ""), 
+                 found = sub("\\|$", 
+                             "", 
+                             found))
 
    return(as.data.frame(plc))
 }
@@ -123,13 +105,13 @@ read_places <-
 #' @export
 create_hexgrid <- 
   function() {
-  # ISL = Iceland
-  de_shp <- raster::getData("GADM", country="ISL", level=0, path=tempdir())
 
-  de_hex_pts <- sp::spsample(de_shp, type="hexagonal", n=10000, cellsize=0.19,
+  is_shp <- raster::getData("GADM", country="ISL", level=0, path=tempdir())
+
+  is_hex_pts <- sp::spsample(is_shp, type="hexagonal", n=10000, cellsize=0.19,
                              offset=c(0.5, 0.5), pretty=TRUE)
 
-  sp::HexPoints2SpatialPolygons(de_hex_pts)
+  sp::HexPoints2SpatialPolygons(is_hex_pts)
 
 }
 
@@ -165,9 +147,9 @@ make_maps <-
 
   # find the hex each town is in
   plc$id <- sprintf("ID%s",
-                    over(SpatialPoints(sp::coordinates(plc[,c(3,2)]), # select lon, lat
-                                       CRS(proj4string(hex_polys_is))),
-                         hex_polys_is))
+                    sp::over(sp::SpatialPoints(sp::coordinates(plc[,c(3,2)]), # select lon, lat
+                                               sp::CRS(sp::proj4string(hex_polys_is))),
+                             hex_polys_is))
 
   # count up all the towns in each hex (by line ending grouping)
   plc <- tidyr::separate(plc, found, c("f1", "f2", "f3"), sep="\\|", fill="right")
@@ -199,20 +181,18 @@ make_maps <-
     cur_heat <- dplyr::filter(de_heat, found==i)
 
     gg <- ggplot()
-    gg <- gg + geom_map(data = is_hex_map, 
-                        map = is_hex_map,
-                        aes(x = long, y = lat, map_id = id),
-                        size = 0.6, color = "#ffffff", fill = no_fill)
-    gg <- gg + geom_map(data = cur_heat, 
-                        map = is_hex_map,
-                        aes(fill = fill, map_id = id),
-                        color = "#ffffff", size = 0.6)
-    gg <- gg + scale_fill_identity(na.value = no_fill)
+    gg <- gg + geom_map(data=is_hex_map, map=is_hex_map,
+                        aes(x=long, y=lat, map_id=id),
+                        size=0.6, color="#ffffff", fill=no_fill)
+    gg <- gg + geom_map(data=cur_heat, map=is_hex_map,
+                        aes(fill=fill, map_id=id),
+                        color="#ffffff", size=0.6)
+    gg <- gg + scale_fill_identity(na.value=no_fill)
     gg <- gg + coord_proj(epsg_31468)
     gg <- gg + theme_map()
-    gg <- gg + theme(strip.background = element_blank())
-    gg <- gg + theme(strip.text = element_blank())
-    gg <- gg + theme(legend.position = "right")
+    gg <- gg + theme(strip.background=element_blank())
+    gg <- gg + theme(strip.text=element_blank())
+    gg <- gg + theme(legend.position="right")
     
     list(title=sprintf("&#8209;%s", suf_nam[[i]][1]),
          subtitle=ifelse(length(suf_nam[[i]])<=1, "",
@@ -251,16 +231,6 @@ display_maps <-
     tags$head(includeHTML("./css/styles.html")),
     tags$body(
       h1("-thorpe, -ness, -by"),
-      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Icelandic toponyms</a> showing the <a href='https://www.jorvikvikingcentre.co.uk/the-vikings/viking-place-names/'>Viking-heritage</a>.<br/><br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
-      p(HTML("<ul>
-<li>by: farmstead, village, settlement. Example Selby, Whitby</li>
-<li>keld: spring. Example Threkeld</li>
-<li>kirk: originally kirkja, meaning church. Example Ormskirk</li>
-<li>ness: promontory or headland. Note: Sheerness is Old English; Inverness is Gaelic (meaning mouth), Skegness is Old Norse</li>
-<li>thwaite: originally thveit, woodland clearing. Example Slaithwaite (Huddersfield)</li>
-<li>toft: site of a house or building. Example Lowestoft, Langtoft</li>
-<li>thorpe: secondary settlement (but in the Midlands could by Old English Throp meaning settlement). Example Copmanthorpe</li>
-</ul>")),
       pblapply(1:length(syl_maps), function(i) {
         div(class="map",
             h2(class="map", HTML(syl_maps[[i]]$title)),

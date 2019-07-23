@@ -52,7 +52,9 @@ suffix_regex <- function() {
 #'
 #' @return A list of suffix character vectors
 #' @export
-suffix_names <- function() { ct$get("suffixList") }
+suffix_names <- function() {
+  ct$get("suffixList") 
+}
 
 #' add geo-coordinates based on town names
 #'
@@ -122,7 +124,7 @@ read_places <-
       remove(my.table,n.rows,url,tables)
       
       # add geo-coordinates
-      places <- add.geoCoordinates(my.table)
+      #places <- add.geoCoordinates(my.table)
       save(places, file="./data/placenames_nl.RData")
    }
    #plc <- read.csv("/data/placenames_nl.csv", stringsAsFactors=FALSE, sep="~")

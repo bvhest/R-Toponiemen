@@ -19,6 +19,8 @@ places <-
   dplyr::rename(name = HEITI_NF) %>%
   # remove numbers from names:
   dplyr::mutate(name = gsub("[[:digit:]]+", "", name)) %>%
+  # keep unique places
+  dplyr::distinct(latitude, longitude, .keep_all = TRUE) %>%
   # keep 
   dplyr::select(name, latitude, longitude)
   
