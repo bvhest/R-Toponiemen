@@ -11,7 +11,7 @@ const suffixList = [
    ["borg"],   // city, crag
 //   ["botn"],   // bottom, head of valley or fjord
    ["brekka"],   // slope
-   ["brú"],   // bridge
+   ["brú", "brýr"],   // bridge
 //   ["bruni", "brunar"],    // Burning or Can be a Lava Field
    ["dalur"],   // valley (could also mean 'a dollar')
 //   ["djúp"],   // long inlet, deep
