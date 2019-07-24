@@ -2,72 +2,53 @@
 ** zelf samengestelde lijst van toponiemen, met gebruikmaking van de volgende bronnen:
 **   - https://www.icelandicroots.com/icelandic-places-and-meanings
 **
-** BHE, 2019-07-23
+** BHE, 2019-07-24
 */
 const suffixList = [
-   ["bær"],   // farm, township
    ["bakki"],   // river bank or land along the coast
-//   ["bjarg"],   // cliff, rock
-   ["borg"],   // city, crag
-//   ["botn"],   // bottom, head of valley or fjord
+   ["botn"],   // bottom, head of valley or fjord
    ["brekka"],   // slope
-   ["brú", "brýr"],   // bridge
-//   ["bruni", "brunar"],    // Burning or Can be a Lava Field
    ["dalur"],   // valley (could also mean 'a dollar')
-//   ["djúp"],   // long inlet, deep
-//   ["dyngja"],   // dome
    ["ey"],   // island
    ["eyri"],   // sandspit
    ["fell"],   // mountain, hill
-//   ["fjall"],   // mountain
+   ["fjall"],   // mountain
    ["fjörður"],   // fjord, valley
-//   ["fljót"],   // large river (could also mean 'hurry up' if you are talking to a woman)
+   ["fljót"],   // large river (could also mean 'hurry up' if you are talking to a woman)
    ["foss"],   // waterfall
-//   ["gígur"],   // crater
    ["gil"],   // gorge, ravine
-//   ["gjá"],   // chasm, fissure
+   ["gjá"],   // chasm, fissure
    ["háls"],   // ridge (could also mean 'a neck')
    ["hamar"],   // crag (could alson mean 'a hammer')
    ["heiði"],   // heath, moor
-   ["hlíð", "hóll", "holt"],   // mountain side
-//   ["hnjúkur", "hnúkur"],   // peak
+   ["hlíð"],   // mountain side
    ["höfði"],   // promontory
-   ["höfn"],   // harbour
-//   ["hóll"],   // rounded hill
+   ["hóll"],   // rounded hill
    ["hólmi"],   // islet
-//   ["holt"],   // stony hill
+   ["holt"],   // stony hill
    ["hraun"],   // lava-field, lava
-//   ["hryggur"],   // ridge (could also mean 'vertebra' or 'sad' if you are talking about a man)
-//   ["hver"],   // hot spring (could also mean 'who)
-//   ["jökull"],   // glacier
-//   ["jökulsá"],   // glacial river
-   ["kirkja"],   // church
+   ["hryggur"],   // ridge (could also mean 'vertebra' or 'sad' if you are talking about a man)
    ["klettur"],   // rock, cliff
    ["kvísl"],   // river, branch of river
    ["lækur"],   // brook
    ["laug"],   // warm spring (could also mean 'he or she lied')
    ["lind", "lindá"],    // Spring Fed River
-//   ["lón"],   // lagoon
-//   ["mynni"],   // mouth
+   ["lón"],   // lagoon
+   ["mynni"],   // mouth
    ["mýri"],   // swamp
    ["nes"],   // headland, ness
-//   ["núpur"],   // spur, peak
+   ["núpur"],   // spur, peak
    ["oddi"],   // point, tongue of land
    ["ós"],   // estuary
-//   ["reykur"],   // smoke, steam
-   //~ ["sandur"],   // sand(s)
-   //~ ["skagi"],   // peninsula
-   //~ ["skógur"],   // wood, forest
-   //~ ["staður"],   // place, parsonage
-   //~ ["stapi"],   // bluff, crag
-   //~ ["tangi"],   // narrow peninsula
-   //~ ["tindur"],   // summit
-   //~ ["tjörn"],   // small lake, pond
-   //~ ["tunga"],   // tongue (of land)
-   //~ ["vað"],   // ford
-   //~ ["varúð"],   // danger
-   //~ ["vatn"],   // lake, water
-   //~ ["vegur"],   // road, track
-   //~ ["vík"],   // inlet, small bay
+   ["sandur"],   // sand(s)
+////   ["skagi"],   // peninsula (PROBLEEM uitgang !!!)
+   ["skógur"],   // wood, forest
+   ["stapi"],   // bluff, crag
+   ["tangi"],   // narrow peninsula
+   ["tjörn"],   // small lake, pond
+   ["tunga"],   // tongue (of land)
+   ["vað"],   // ford
+   ["vatn"],   // lake, water
+   ["vík"],   // inlet, small bay
    ["vogur"]  // inlet, creek (it´s also a name of a rehab clinic in iceland)
 ];

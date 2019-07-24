@@ -190,11 +190,16 @@ make_maps <-
   epsg_31468 <- "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=4500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"
 
   suf_nam <- suffix_names()
+  max_list <- length(suf_nam)
 
-  lapply(1:length(suf_nam), function(i) {
+  lapply(1:max_list, function(i) {
 
+    message(paste("\n\nprocessing:", suf_nam[[i]][1]))
+    
     cur_heat <- dplyr::filter(is_heat, found == i)
-
+    
+    message(paste("\ncur_heat = ",cur_heat))
+    
     gg <- ggplot()
     gg <- gg + geom_map(data = is_hex_map, 
                         map = is_hex_map,
@@ -202,10 +207,10 @@ make_maps <-
                         size = 0.6, 
                         color = "#ffffff", 
                         fill = no_fill)
-    gg <- gg + geom_map(data = cur_heat, 
+    gg <- gg + geom_map(data = cur_heat,
                         map = is_hex_map,
                         aes(fill = fill, map_id = id),
-                        color = "#ffffff", 
+                        color = "#ffffff",
                         size = 0.6)
     gg <- gg + scale_fill_identity(na.value = no_fill)
     gg <- gg + coord_proj(epsg_31468)
@@ -215,7 +220,8 @@ make_maps <-
     gg <- gg + theme(legend.position = "right")
     
     list(title = sprintf("&#8209;%s", suf_nam[[i]][1]),
-         subtitle = ifelse(length(suf_nam[[i]])<=1, "",
+         subtitle = ifelse(length(suf_nam[[i]]) <= 1, 
+                           "",
                            paste0(sprintf("&#8209;%s", suf_nam[[i]][2:length(suf_nam[[i]])]),
                                   collapse = ", ")),
          total = sum(cur_heat$n),
@@ -247,21 +253,31 @@ display_maps <-
   if (!file.exists("./css/styles.html"))
     download.file("http://rud.is/zellingenach/styles.html", "./css/styles.html")
   
-  tags$html(
-    tags$head(includeHTML("./css/styles.html")),
-    tags$body(
-      h1("-bær, -bakki, -borg"),
-      p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Icelandic toponyms</a> showing the origin of different Icelandic names.<br/><br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
-      pblapply(1:length(syl_maps), function(i) {
-        div(class="map",
-            h2(class="map", HTML(syl_maps[[i]]$title)),
-            h4(class="map", HTML(syl_maps[[i]]$subtitle)),
-            suppressMessages(htmlSVG(print(syl_maps[[i]]$gg))),
-            h3(class="map", sprintf("%s places", comma(syl_maps[[i]]$total))))
-      })
+  # message("pos 2.5")
+  # pblapply(1:length(syl_maps), function(i) {
+  #   print(syl_maps[[i]]$gg)
+  # })
+  
+  message("\n\ncreating HTML")
+  the_maps <-
+    tags$html(
+      tags$head(includeHTML("./css/styles.html")),
+      tags$body(
+        h1("-bær, -bakki, -borg"),
+        p(HTML("Some <a href='https://nl.wikipedia.org/wiki/Toponiem'>Icelandic toponyms</a> showing the origin of different Icelandic names.<br/><br/>Credits: visualisation is based on the inspiring publications <a href='http://truth-and-beauty.net/experiments/ach-ingen-zell/'>-ach, -inge, -zell</a> and <a href='http://rud.is/b/2016/01/03/zellingenach-a-visual-exploration-of-the-spatial-patterns-in-the-endings-of-german-town-and-village-names-in-r/'>Zellingenach</a>.<br/><br/>")),
+        pblapply(1:length(syl_maps), function(i) {
+          message(paste("\n\nplotting:", syl_maps[[i]]$title))
+          div(class="map",
+              h2(class="map", HTML(syl_maps[[i]]$title)),
+              h4(class="map", HTML(syl_maps[[i]]$subtitle)),
+              suppressMessages(svglite::htmlSVG(print(syl_maps[[i]]$gg))),
+              h3(class="map", sprintf("%s places", comma(syl_maps[[i]]$total)))
+            )
+        })
+      )
     )
-  ) -> the_maps
 
+  message("pos 4")
   html_print(the_maps, background = "#dfdada;")
 
   if (!is.null(output_file)) 

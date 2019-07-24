@@ -2,7 +2,7 @@
 ** zelf samengestelde lijst van toponiemen, met gebruikmaking van de volgende bronnen:
 **   - https://www.icelandicroots.com/icelandic-places-and-meanings
 **
-** BHE, 2019-07-23
+** BHE, 2019-07-24
 */
 const suffixList = [
    ["akrar", "akur"],  // field
@@ -14,7 +14,6 @@ const suffixList = [
    ["hagi", "hagar"], // 	Pasture
    ["höfn"],   // harbour
    ["hús"], // 	House
-   ["kauptún", "kaupstaður", "kaupstaðir"], // 	Administrative Town,	Village
    ["kirkja"],   // church
    ["kot"], // 	a very small farm
    ["sókn"], // 	Parish (Church area)
