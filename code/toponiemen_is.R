@@ -185,33 +185,33 @@ make_maps <-
 
   is_heat$fill <- vir_col(is_heat$log)
 
-  # we'll use a proper projection
+  # we'll use a proper projection for Germany (change for Iceland)
   if (verbose) message("Applying a proper projection")
   epsg_31468 <- "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=4500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"
-
+  
   suf_nam <- suffix_names()
   max_list <- length(suf_nam)
 
   lapply(1:max_list, function(i) {
 
-    message(paste("\n\nprocessing:", suf_nam[[i]][1]))
+    if (verbose) message(paste("\n\nprocessing:", suf_nam[[i]][1]))
     
     cur_heat <- dplyr::filter(is_heat, found == i)
     
-    message(paste("\ncur_heat = ",cur_heat))
+    if (verbose) message(paste("\ncur_heat = ",cur_heat))
     
     gg <- ggplot()
     gg <- gg + geom_map(data = is_hex_map, 
                         map = is_hex_map,
                         aes(x = long, y = lat, map_id = id),
-                        size = 0.6, 
+                        size = 0.975,
                         color = "#ffffff", 
                         fill = no_fill)
     gg <- gg + geom_map(data = cur_heat,
                         map = is_hex_map,
                         aes(fill = fill, map_id = id),
                         color = "#ffffff",
-                        size = 0.6)
+                        size = 0.975)
     gg <- gg + scale_fill_identity(na.value = no_fill)
     gg <- gg + coord_proj(epsg_31468)
     gg <- gg + theme_map()

@@ -25,6 +25,7 @@ library(tidyr)
 library(XML)
 library(ggmap)
 
+rm(list=ls()) 
 
 ct <- v8()
 if (!file.exists("./data/suffixlist_uk.js"))
@@ -189,7 +190,7 @@ make_maps <-
 
   de_heat$fill <- vir_col(de_heat$log)
 
-  # we'll use a proper projection for Germany
+  # we'll use a proper projection for Germany (change for the UK)
   epsg_31468 <- "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=4500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"
 
   suf_nam <- suffix_names()
@@ -199,12 +200,17 @@ make_maps <-
     cur_heat <- dplyr::filter(de_heat, found==i)
 
     gg <- ggplot()
-    gg <- gg + geom_map(data=uk_hex_map, map=uk_hex_map,
-                        aes(x=long, y=lat, map_id=id),
-                        size=0.6, color="#ffffff", fill=no_fill)
-    gg <- gg + geom_map(data=cur_heat, map=uk_hex_map,
-                        aes(fill=fill, map_id=id),
-                        color="#ffffff", size=0.6)
+    gg <- gg + geom_map(data = uk_hex_map, 
+                        map = uk_hex_map,
+                        aes(x = long, y = lat, map_id = id),
+                        size = 0.975,
+                        color = "#ffffff", 
+                        fill = no_fill)
+    gg <- gg + geom_map(data = cur_heat,
+                        map = uk_hex_map,
+                        aes(fill = fill, map_id = id),
+                        color = "#ffffff",
+                        size = 0.975)
     gg <- gg + scale_fill_identity(na.value=no_fill)
     gg <- gg + coord_proj(epsg_31468)
     gg <- gg + theme_map()
